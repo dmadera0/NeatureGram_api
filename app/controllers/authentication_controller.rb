@@ -1,7 +1,7 @@
 class AuthenticationController < ApplicationController
     
     def login
-        user =User.find_by(name: params:[:name])
+        @user =User.find_by(name: params[:name])
 
        if !@user
         render json:{ message: 'That user does not exist'}, status: :unauthorized
@@ -9,7 +9,10 @@ class AuthenticationController < ApplicationController
         if !@user.authenticate params[:password]
             render json:{message: 'Bad password'}, status: :unauthorized
         else
-            render json: {user: @user}, status: :ok
+            payload = { user_id: @user.id}
+            secret = 'secret'
+            token = JWT.encode(payload, secret)
+            render json: { token: token}, status: :ok
        end
         end
     end
